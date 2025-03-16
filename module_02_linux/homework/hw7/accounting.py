@@ -19,20 +19,30 @@ app = Flask(__name__)
 storage = {}
 
 
-@app.route("/add/<date>/<int:number>")
-def add(date: str, number: int):
-    ...
+@app.route('/add/<date>/<int:number>')
+def add_expense(date: str, number: int):
+    year = int(date[:4])
+    month = int(date[4:6])
+    day = int(date[6:8])
+
+    storage.setdefault(year, {}).setdefault(month, 0)
+    storage[year][month] += number
+
+    return f' Трата {number} р. за {day}.{month}.{year} добавлена.'
 
 
-@app.route("/calculate/<int:year>")
+@app.route('/calculate/<int:year>')
 def calculate_year(year: int):
-    ...
+    total = sum(storage.get(year, {}).values())
+    return f' Траты за {year} год: {total} р.'
 
 
-@app.route("/calculate/<int:year>/<int:month>")
+@app.route('/calculate/<int:year>/<int:month>')
 def calculate_month(year: int, month: int):
-    ...
+    # Получаем суммарные траты за указанный месяц
+    total = storage.get(year, {}).get(month, 0)
+    return f' Суммарные траты за {month}.{year}: {total} р.'
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

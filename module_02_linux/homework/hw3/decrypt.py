@@ -37,11 +37,26 @@ $ echo  ‘абраа..-.кадабра’ | python3 decrypt.py
 import sys
 
 
-def decrypt(encryption: str) -> str:
-    ...
+def decrypt(encrypted: str) -> str:
+    result = []
+    i = 0
+    n = len(encrypted)
+
+    while i < n:
+        if encrypted[i] == '.':
+            if i + 1 < n and encrypted[i + 1] == '.':
+                if result:
+                    result.pop()
+                i += 2
+            else:
+                i += 1
+        else:
+            result.append(encrypted[i])
+            i += 1
+    return ''.join(result)
 
 
 if __name__ == '__main__':
-    data: str = sys.stdin.read()
+    data: str = sys.stdin.read().strip()
     decryption: str = decrypt(data)
     print(decryption)

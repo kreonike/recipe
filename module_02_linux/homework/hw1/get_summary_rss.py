@@ -15,10 +15,21 @@ $ ps aux > output_file.txt
 
 
 def get_summary_rss(ps_output_file_path: str) -> str:
-    ...
+    total_kb = 0
+
+    with open(ps_output_file_path, 'r') as file:
+        lines = file.readlines()[1:]
+
+        for line in lines:
+            columns = line.split()
+            rss = int(columns[5])
+            total_kb += rss
+
+    total_rss_mb = total_kb / 1024
+    return f"Total RSS: {total_rss_mb:.2f} MB"
 
 
 if __name__ == '__main__':
-    path: str = 'PATH_TO_OUTPUT_FILE'
+    path: str = 'output_file.txt'
     summary_rss: str = get_summary_rss(path)
     print(summary_rss)
