@@ -1,42 +1,62 @@
 import datetime
 from flask import Flask
+from random import choice
+import os
+import re
 
 app = Flask(__name__)
 
+cars_list = ['Chevrolet', 'Renault', 'Ford', 'Lada']
+cats_list = ['корниш-рекс', 'русская', 'голубая', 'шотландская вислоухая', 'мейн-кун', 'манчкин']
+
+counter = 0
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BOOK_FILE = os.path.join(BASE_DIR, 'war_and_peace.txt')
+
+with open(BOOK_FILE, 'r', encoding='utf-8') as book:
+    text = book.read()
+    words = re.findall(r'\b\w+\b', text)
 
 @app.route('/hello_world')
-def test_function():
-    pass
+def hello_function():
+    return 'Привет, мир!'
 
 
 @app.route('/cars')
-def test_function():
-    pass
+def cars_function():
+    return cars_list
 
 
 @app.route('/cats')
-def test_function():
-    pass
+def cats_function():
+    random_cats = choice(cats_list)
+    return random_cats
 
 
 @app.route('/get_time/now')
-def test_function():
-    pass
+def time_now_function():
+    now = datetime.datetime.now()
+    return f'Сейчас:: {now}'
 
 
 @app.route('/get_time/future')
-def test_function():
-    pass
+def time_future_function():
+    future_time = datetime.datetime.now() + datetime.timedelta(hours=1)
+    return f'Время через час: {future_time}'
 
 
 @app.route('/get_random_word')
-def test_function():
-    pass
+def random_word_function():
+    random_word = choice(words)
+    return f'Рандомное слово из файла: {random_word}'
 
 
 @app.route('/counter')
-def test_function():
-    pass
+def counter_function():
+    global counter
+    counter += 1
+    return f'Страница была открыта: {counter} раз(а)'
 
 
 if __name__ == '__main__':
