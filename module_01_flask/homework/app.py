@@ -6,11 +6,8 @@ import re
 
 app = Flask(__name__)
 
-cars_list = ['Chevrolet', 'Renault', 'Ford', 'Lada']
-cats_list = ['корниш-рекс', 'русская', 'голубая', 'шотландская вислоухая', 'мейн-кун', 'манчкин']
-# TODO сделайте эти переменные константами (имя констант пишется прописными буквами
-
-counter = 0  # TODO глобальная переменная - это основной код программы должен располагаться после определения всех функций
+CARS_LIST = ['Chevrolet', 'Renault', 'Ford', 'Lada']
+CATS_LIST = ['корниш-рекс', 'русская', 'голубая', 'шотландская вислоухая', 'мейн-кун', 'манчкин']
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BOOK_FILE = os.path.join(BASE_DIR, 'war_and_peace.txt')
@@ -19,6 +16,7 @@ with open(BOOK_FILE, 'r', encoding='utf-8') as book:  # TODO это тоже о�
     text = book.read()
     words = re.findall(r'\b\w+\b', text)
 
+
 @app.route('/hello_world')
 def hello_function():
     return 'Привет, мир!'
@@ -26,12 +24,12 @@ def hello_function():
 
 @app.route('/cars')
 def cars_function():
-    return cars_list
+    return CARS_LIST
 
 
 @app.route('/cats')
 def cats_function():
-    random_cats = choice(cats_list)
+    random_cats = choice(CATS_LIST)
     return random_cats
 
 
@@ -59,6 +57,8 @@ def counter_function():
     counter += 1
     return f'Страница была открыта: {counter} раз(а)'
 
+
+counter = 0
 
 if __name__ == '__main__':
     app.run(debug=True)
