@@ -8,13 +8,14 @@ app = Flask(__name__)
 
 cars_list = ['Chevrolet', 'Renault', 'Ford', 'Lada']
 cats_list = ['корниш-рекс', 'русская', 'голубая', 'шотландская вислоухая', 'мейн-кун', 'манчкин']
+# TODO сделайте эти переменные константами (имя констант пишется прописными буквами
 
-counter = 0
+counter = 0  # TODO глобальная переменная - это основной код программы должен располагаться после определения всех функций
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BOOK_FILE = os.path.join(BASE_DIR, 'war_and_peace.txt')
 
-with open(BOOK_FILE, 'r', encoding='utf-8') as book:
+with open(BOOK_FILE, 'r', encoding='utf-8') as book:  # TODO это тоже основной код программы
     text = book.read()
     words = re.findall(r'\b\w+\b', text)
 
