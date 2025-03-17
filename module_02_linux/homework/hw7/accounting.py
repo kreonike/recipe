@@ -13,6 +13,7 @@
 """
 
 from flask import Flask
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -21,30 +22,39 @@ storage = {}
 
 @app.route('/add/<date>/<int:number>')
 def add_expense(date: str, number: int):
-    year = int(date[:4])
-    month = int(date[4:6])
-    day = int(date[6:8])
-    # TODO А что будет если в срезы попадут не цифры? Или дата получится несуществующей (45 января, например)
-    #  или вообще не числовые значения будут указаны? Проще всего провалидировать данные с помощью datetime,
-    #  чтобы в случае ошибки в данных выбрасывалось исключение
-    storage.setdefault(year, {}).setdefault(month, 0)
-    storage[year][month] += number
-    # TODO в задании также говорится про добавление к словарю записи с ключом "total", чтобы не пересчитывать
-    #  каждый раз сумму по всем месяцам и дням
-    return f' Трата {number} р. за {day}.{month}.{year} добавлена.'
+    try:
+        # Валидация даты через datetime
+        year = int(date[:4])
+        month = int(date[4:6])
+        day = int(date[6:8])
+        datetime(year, month, day)  # Проверка корректности даты
+
+        # Инициализация вложенных словарей если их еще нет
+        if year not in storage:
+            storage[year] = {'months': {}, 'total': 0}
+
+        # Добавление траты
+        storage[year]['months'].setdefault(month, 0)
+        storage[year]['months'][month] += number
+        storage[year]['total'] += number
+
+        return f'Трата {number} р. за {day}.{month}.{year} добавлена.'
+    except ValueError:
+        return 'Ошибка: некорректная дата или формат данных', 400
 
 
 @app.route('/calculate/<int:year>')
 def calculate_year(year: int):
-    total = sum(storage.get(year, {}).values())
-    return f' Траты за {year} год: {total} р.'
+    total = storage.get(year, {}).get('total', 0)
+    return f'Траты за {year} год: {total} р.'
 
 
 @app.route('/calculate/<int:year>/<int:month>')
 def calculate_month(year: int, month: int):
-    # Получаем суммарные траты за указанный месяц
-    total = storage.get(year, {}).get(month, 0)
-    return f' Суммарные траты за {month}.{year}: {total} р.'
+    if month < 1 or month > 12:
+        return 'Ошибка: месяц должен быть от 1 до 12', 400
+    total = storage.get(year, {}).get('months', {}).get(month, 0)
+    return f'Суммарные траты за {month}.{year}: {total} р.'
 
 
 if __name__ == '__main__':

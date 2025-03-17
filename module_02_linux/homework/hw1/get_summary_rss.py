@@ -14,22 +14,36 @@ $ ps aux > output_file.txt
 """
 
 
+def human_readable_size(size_in_kb: float) -> str:
+    """
+    Преобразует размер из килобайт в человекочитаемый формат (КБ, МБ, ГБ и т.д.).
+    """
+    units = ['КБ', 'МБ', 'ГБ', 'ТБ']
+    size = size_in_kb
+    unit_index = 0
+
+    while size >= 1024 and unit_index < len(units) - 1:
+        size /= 1024
+        unit_index += 1
+
+    return f"{size:.2f} {units[unit_index]}"
+
+
 def get_summary_rss(ps_output_file_path: str) -> str:
+    """
+    Вычисляет общий объем использования памяти RSS из файла вывода ps aux и возвращает его в человекочитаемом формате.
+    """
     total_kb = 0
 
     with open(ps_output_file_path, 'r') as file:
-        lines = file.readlines()[1:]
+        lines = file.readlines()[1:]  # Пропускаем заголовок
 
         for line in lines:
             columns = line.split()
-            rss = int(columns[5])
+            rss = int(columns[5])  # RSS в килобайтах в выводе ps aux
             total_kb += rss
 
-    total_rss_mb = total_kb / 1024
-    # TODO лучше в цикле делить на 1024 пока результат деления не станет меньше 1024 и считать итерации,
-    #  соответственно, размерность будет байт, килобайты, мегабайты, гигабайты в зависимости от количества
-    #  итераций. А ещё лучше, создать отдельную функцию для получения удобочитаемого размера.
-    return f"Total RSS: {total_rss_mb:.2f} MB"
+    return f'Общий RSS: {human_readable_size(total_kb)}'
 
 
 if __name__ == '__main__':
