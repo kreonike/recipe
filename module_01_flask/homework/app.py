@@ -12,10 +12,6 @@ CATS_LIST = ['корниш-рекс', 'русская', 'голубая', 'шо�
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BOOK_FILE = os.path.join(BASE_DIR, 'war_and_peace.txt')
 
-with open(BOOK_FILE, 'r', encoding='utf-8') as book:  # TODO это тоже основной код программы
-    text = book.read()
-    words = re.findall(r'\b\w+\b', text)
-
 
 @app.route('/hello_world')
 def hello_function():
@@ -62,3 +58,6 @@ counter = 0
 
 if __name__ == '__main__':
     app.run(debug=True)
+    with open(BOOK_FILE, 'r', encoding='utf-8') as book:
+        text = book.read()
+        words = re.findall(r'\b\w+\b', text)
