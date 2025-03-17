@@ -18,10 +18,27 @@ from flask import Flask
 app = Flask(__name__)
 
 
-@app.route("/max_number/...")
-def max_number():
-    ...
+@app.route('/max_number/<path:numbers>')
+def max_number(numbers: str):
+    parts = numbers.split('/')
+    num_list = []
+
+    for part in parts:
+        try:
+            num = int(part)
+        except ValueError:
+            try:
+                num = float(part)
+            except ValueError:
+                continue
+        num_list.append(num)
+
+    if not num_list:
+        return 'Это не число'
+    max_num = max(num_list)
+
+    return f'Максимальное число: {max_num}'
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
