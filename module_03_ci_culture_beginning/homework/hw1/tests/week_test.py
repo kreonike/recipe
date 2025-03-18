@@ -13,6 +13,8 @@ def client():
 def test_correct_weekday(client):
     for weekday in range(7):
         with freeze_time(f'2025-03-{18 + weekday}'):
+        # TODO добавьте в контекстный менеджер и self.subTest тогда при первом неверном assert тест не завершится,
+        #  а выполнятся все "кейсы" и будет отчёт для каких значений тесты провалились, а для каких были успешны)
             response = client.get('/hello-world/TestUser')
             expected_greeting = GREETINGS[weekday]
             assert expected_greeting in response.data.decode('utf-8')

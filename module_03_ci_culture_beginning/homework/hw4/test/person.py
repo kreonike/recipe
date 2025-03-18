@@ -25,3 +25,4 @@ class Person:
 
     def is_homeless(self) -> bool:
         return self.address is None or self.address == ""  # Исправлено: проверяется self.address
+        # TODO проще так: return not bool(self.address)

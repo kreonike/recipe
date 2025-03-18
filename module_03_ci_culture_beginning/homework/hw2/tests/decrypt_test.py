@@ -11,6 +11,10 @@ class TestDecrypt(unittest.TestCase):
 
     def test_two_dots(self):
         with self.subTest():
+            # TODO тут в цикле выполните проверку всех нужных вариантов
+            #  https://pythobyte.com/unittest-60245/
+            # https://copython.ru/kontekstnyy-menedzher-subtest-unittest-v-python
+            # А также документация: https://docs.python.org/3/library/unittest.html#distinguishing-test-iterations-using-subtests
             self.assertEqual(decrypt('абраа..-кадабра'), 'абра-кадабра')
         with self.subTest():
             self.assertEqual(decrypt('абраа..-.кадабра'), 'абра-кадабра')
