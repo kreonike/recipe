@@ -10,31 +10,35 @@ class TestDecrypt(unittest.TestCase):
         self.assertEqual(decrypt('абраа.-кадабра'), 'абраа-кадабра')
 
     def test_two_dots(self):
-        with self.subTest():
-            # TODO тут в цикле выполните проверку всех нужных вариантов
-            #  https://pythobyte.com/unittest-60245/
-            # https://copython.ru/kontekstnyy-menedzher-subtest-unittest-v-python
-            # А также документация: https://docs.python.org/3/library/unittest.html#distinguishing-test-iterations-using-subtests
-            self.assertEqual(decrypt('абраа..-кадабра'), 'абра-кадабра')
-        with self.subTest():
-            self.assertEqual(decrypt('абраа..-.кадабра'), 'абра-кадабра')
-        with self.subTest():
-            self.assertEqual(decrypt('абра--..кадабра'), 'абра-кадабра')
+        # Список тестовых случаев для двух точек
+        test_cases = [
+            ('абраа..-кадабра', 'абра-кадабра'),
+            ('абраа..-.кадабра', 'абра-кадабра'),
+            ('абра--..кадабра', 'абра-кадабра'),
+        ]
+
+        # Проверка всех тестовых случаев в цикле с использованием subTest
+        for input_str, expected_output in test_cases:
+            with self.subTest(input_str=input_str, expected_output=expected_output):
+                self.assertEqual(decrypt(input_str), expected_output)
 
     def test_three_dots(self):
         self.assertEqual(decrypt('абрау...-кадабра'), 'абра-кадабра')
 
     def test_multiple_dots(self):
-        with self.subTest():
-            self.assertEqual(decrypt('абра........'), '')
-        with self.subTest():
-            self.assertEqual(decrypt('абр......a.'), 'a')
-        with self.subTest():
-            self.assertEqual(decrypt('1..2.3'), '23')
-        with self.subTest():
-            self.assertEqual(decrypt('.'), '')
-        with self.subTest():
-            self.assertEqual(decrypt('1.......................'), '')
+        # Список тестовых случаев для множества точек
+        test_cases = [
+            ('абра........', ''),
+            ('абр......a.', 'a'),
+            ('1..2.3', '23'),
+            ('.', ''),
+            ('1.......................', ''),
+        ]
+
+        # Проверка всех тестовых случаев в цикле с использованием subTest
+        for input_str, expected_output in test_cases:
+            with self.subTest(input_str=input_str, expected_output=expected_output):
+                self.assertEqual(decrypt(input_str), expected_output)
 
 
 if __name__ == '__main__':
