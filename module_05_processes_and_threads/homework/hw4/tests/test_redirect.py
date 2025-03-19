@@ -30,7 +30,8 @@ class TestRedirect(unittest.TestCase):
         stderr_file = io.StringIO()
         with Redirect(stdout=stdout_file, stderr=stderr_file):
             print('stdout')
-            print('stderr', file=sys.stderr)
+            print('stderr', file=sys.stderr)  # TODO это нечистый приём, это не проверка Redirect. Выбросите тут
+                                              #  исключение и проверьте что оно попало в нужный поток (файл)
         self.assertEqual(stdout_file.getvalue().strip(), 'stdout')
         self.assertEqual(stderr_file.getvalue().strip(), 'stderr')
 

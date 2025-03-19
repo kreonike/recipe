@@ -45,6 +45,9 @@ class Redirect:
         """
         Выход из контекстного менеджера. Восстанавливаем оригинальные потоки.
         """
+        # TODO надо записать в файл поток stderr:
+        #  if self.stderr:
+        #      sys.stderr.write(traceback.format_exc())
         if self.stdout:
             sys.stdout = self.old_stdout
         if self.stderr:
