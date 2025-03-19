@@ -15,6 +15,7 @@ from wtforms import IntegerField, StringField
 from wtforms.validators import InputRequired, Email, NumberRange, Optional
 
 app = Flask(__name__)
+app.config["WTF_CSRF_ENABLED"] = False
 
 
 class RegistrationForm(FlaskForm):

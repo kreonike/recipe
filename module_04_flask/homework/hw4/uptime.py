@@ -6,13 +6,18 @@
 """
 
 from flask import Flask
+import subprocess
 
 app = Flask(__name__)
 
 
 @app.route("/uptime", methods=['GET'])
 def uptime() -> str:
-    ...
+    # uptime
+    result = subprocess.run(['uptime'], stdout=subprocess.PIPE, text=True)
+    uptime_output = result.stdout.strip()
+
+    return f'Current uptime is {uptime_output}'
 
 
 if __name__ == '__main__':
