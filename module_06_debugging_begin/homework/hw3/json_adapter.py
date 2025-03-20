@@ -26,6 +26,7 @@ logger.info('Сообщение')
 """
 
 import logging
+from common import configure_logging
 
 
 class JsonAdapter(logging.LoggerAdapter):
@@ -35,8 +36,8 @@ class JsonAdapter(logging.LoggerAdapter):
 
 
 if __name__ == '__main__':
+    configure_logging(level=logging.DEBUG)
     logger = JsonAdapter(logging.getLogger(__name__))
-    logger.setLevel(logging.DEBUG)
     logger.info('Сообщение')
     logger.error('Кавычка)"')
     logger.debug("Еще одно сообщение")
