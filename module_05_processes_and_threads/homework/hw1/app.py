@@ -14,41 +14,55 @@ from typing import List
 
 from flask import Flask
 
-app = Flask(__name__)
+import os
+import subprocess
+from typing import List
+from flask import Flask
 
+app = Flask(__name__)
 
 def get_pids(port: int) -> List[int]:
     """
-    Возвращает список PID процессов, занимающих переданный порт
-    @param port: порт
-    @return: список PID процессов, занимающих порт
+    Возвращает список PID процессов, использующих указанный порт.
+    @param port: Номер порта.
+    @return: Список PID.
     """
     if not isinstance(port, int):
-        raise ValueError
+        raise ValueError("Порт должен быть целым числом.")
 
-    pids: List[int] = []
-    ...
-    return pids
-
+    try:
+        # Запускаем команду lsof для поиска процессов
+        result = subprocess.run(['lsof', '-i', f':{port}'], stdout=subprocess.PIPE, text=True)
+        lines = result.stdout.splitlines()
+        pids = []
+        for line in lines[1:]:
+            parts = line.split()
+            if len(parts) > 1:
+                pids.append(int(parts[1]))
+        return pids
+    except subprocess.CalledProcessError:
+        return []
 
 def free_port(port: int) -> None:
     """
-    Завершает процессы, занимающие переданный порт
-    @param port: порт
+    Завершает процессы, использующие указанный порт.
+    @param port: Номер порта.
     """
-    pids: List[int] = get_pids(port)
-    ...
-
+    pids = get_pids(port)
+    for pid in pids:
+        try:
+            os.kill(pid, 9)
+        except ProcessLookupError:
+            pass
 
 def run(port: int) -> None:
     """
-    Запускает flask-приложение по переданному порту.
-    Если порт занят каким-либо процессом, завершает его.
-    @param port: порт
+    Запускает Flask-приложение на указанном порту.
+    Если порт занят, завершает процессы, использующие его.
+    @param port: Номер порта.
     """
     free_port(port)
     app.run(port=port)
-
 
 if __name__ == '__main__':
     run(5000)
