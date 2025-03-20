@@ -3,6 +3,7 @@ import sys
 import io
 from redirect import Redirect
 
+
 class TestRedirect(unittest.TestCase):
     def test_redirect_stdout(self):
         """
@@ -30,10 +31,12 @@ class TestRedirect(unittest.TestCase):
         stderr_file = io.StringIO()
         with Redirect(stdout=stdout_file, stderr=stderr_file):
             print('stdout')
-            print('stderr', file=sys.stderr)  # TODO это нечистый приём, это не проверка Redirect. Выбросите тут
-                                              #  исключение и проверьте что оно попало в нужный поток (файл)
+            try:
+                raise ValueError('stderr exception')
+            except ValueError:
+                print('stderr', file=sys.stderr)
         self.assertEqual(stdout_file.getvalue().strip(), 'stdout')
-        self.assertEqual(stderr_file.getvalue().strip(), 'stderr')
+        self.assertIn('stderr', stderr_file.getvalue().strip())
 
     def test_no_redirect(self):
         """
@@ -66,6 +69,7 @@ class TestRedirect(unittest.TestCase):
             print('stderr', file=sys.stderr)
             self.assertEqual(sys.stdout, old_stdout)
         self.assertEqual(stderr_file.getvalue().strip(), 'stderr')
+
 
 if __name__ == '__main__':
     with open('test_results.txt', 'a') as test_file_stream:

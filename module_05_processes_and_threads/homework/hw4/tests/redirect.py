@@ -1,13 +1,5 @@
-"""
-Иногда возникает необходимость перенаправить вывод в нужное нам место внутри программы по ходу её выполнения.
-Реализуйте контекстный менеджер, который принимает два IO-объекта (например, открытые файлы)
-и перенаправляет туда стандартные потоки stdout и stderr.
-
-Аргументы контекстного менеджера должны быть непозиционными,
-чтобы можно было ещё перенаправить только stdout или только stderr.
-"""
-
 import sys
+import traceback
 from types import TracebackType
 from typing import Type, Literal, IO
 
@@ -45,9 +37,9 @@ class Redirect:
         """
         Выход из контекстного менеджера. Восстанавливаем оригинальные потоки.
         """
-        # TODO надо записать в файл поток stderr:
-        #  if self.stderr:
-        #      sys.stderr.write(traceback.format_exc())
+        if exc_type is not None and self.stderr:
+            sys.stderr.write(traceback.format_exc())
+
         if self.stdout:
             sys.stdout = self.old_stdout
         if self.stderr:
