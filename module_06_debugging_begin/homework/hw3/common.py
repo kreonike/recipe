@@ -1,11 +1,13 @@
 import logging
+import json
 
 
 class JsonAdapter(logging.LoggerAdapter):
     def process(self, msg, kwargs):
-        # TODO для начала стоит сериализовать в json c поддержкой нелатинских букв: json.dumps(msg, ensure_ascii=False)
-        msg = msg.replace('"', '\\"')
+        # Сериализуем сообщение в JSON-формат с поддержкой нелатинских символов
+        msg = json.dumps(msg, ensure_ascii=False)
         return msg, kwargs
+
 
 def configure_logging(level=logging.INFO):
     formatter = logging.Formatter('{'

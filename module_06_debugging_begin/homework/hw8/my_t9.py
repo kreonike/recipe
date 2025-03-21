@@ -18,35 +18,32 @@
 и возвращает список слов английского языка, которые можно получить из этой последовательности цифр.
 """
 from typing import List
+import re
 
 # Сопоставление цифр и букв
 digit_to_letters = {
-    '2': ['a', 'b', 'c'],
-    '3': ['d', 'e', 'f'],
-    '4': ['g', 'h', 'i'],
-    '5': ['j', 'k', 'l'],
-    '6': ['m', 'n', 'o'],
-    '7': ['p', 'q', 'r', 's'],
-    '8': ['t', 'u', 'v'],
-    '9': ['w', 'x', 'y', 'z']
+    '2': '[abc]',
+    '3': '[def]',
+    '4': '[ghi]',
+    '5': '[jkl]',
+    '6': '[mno]',
+    '7': '[pqrs]',
+    '8': '[tuv]',
+    '9': '[wxyz]'
 }
 
 def my_t9(input_numbers: str) -> List[str]:
+    # Загружаем список английских слов
     with open('words', 'r') as file:
-        english_words = set(word.strip().lower() for word in file.readlines())
+        english_words = [word.strip().lower() for word in file.readlines()]
 
-    def generate_combinations(digits, current_combination, index):
-        if index == len(digits):
-            combinations.append(current_combination)
-            return
-        for letter in digit_to_letters[digits[index]]:
-            generate_combinations(digits, current_combination + letter, index + 1)
+    # Строим регулярное выражение на основе введённой последовательности цифр
+    regex_pattern = ''.join(digit_to_letters[digit] for digit in input_numbers)
+    regex = re.compile(f'^{regex_pattern}$')
 
-    combinations = []
-    generate_combinations(input_numbers, "", 0)
+    # Ищем слова, соответствующие регулярному выражению
+    valid_words = [word for word in english_words if regex.match(word)]
 
-    valid_words = [word for word in combinations if word in english_words]
-    # TODO Подсказка: проще решить с помощью регэксп-выражений
     return valid_words
 
 if __name__ == '__main__':

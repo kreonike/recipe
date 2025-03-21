@@ -1,6 +1,7 @@
 import getpass
 import hashlib
 import logging
+import re
 from common import configure_logging
 from bisect import bisect_left
 
@@ -38,18 +39,17 @@ def is_strong_password(password: str) -> bool:
     :param password: Пароль для проверки.
     :return: True, если пароль сильный, иначе False.
     """
-
     words = load_words_from_file('words')
     password_lower = password.lower()
-    password_words = password_lower.split()
-    
+
+    # Используем регулярное выражение для поиска всех подстрок из букв
+    word_pattern = re.compile(r'\b\w+\b')
+    password_words = word_pattern.findall(password_lower)
 
     for word in password_words:
         if binary_search(word, words):
             logger.warning(f'Пароль содержит запрещённое слово: {word}')
             return False
-    # TODO можно уменьшить количество итераций, если регэкспами найти все "слова" в пароле (по факту, все комбинации
-    #  подстрок из букв) и проверить их вхождение в words
 
     return True
 

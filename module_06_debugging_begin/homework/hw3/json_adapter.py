@@ -1,5 +1,5 @@
 """
-Удобно сохранять логи в определённом формате, чтобы затем их можно было фильтровать и анализировать. 
+Удобно сохранять логи в определённом формате, чтобы затем их можно было фильтровать и анализировать.
 Сконфигурируйте логгер так, чтобы он писал логи в файл skillbox_json_messages.log в следующем формате:
 
 {"time": "<время>", "level": "<уровень лога>", "message": "<сообщение>"}
@@ -26,13 +26,14 @@ logger.info('Сообщение')
 """
 
 import logging
+import json
 from common import configure_logging
 
 
 class JsonAdapter(logging.LoggerAdapter):
     def process(self, msg, kwargs):
-        # TODO  см. комментарий в сommon
-        new_message = msg
+        # Сериализуем сообщение в JSON-формат с поддержкой нелатинских символов
+        new_message = json.dumps(msg, ensure_ascii=False)
         return new_message, kwargs
 
 
