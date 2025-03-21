@@ -1,65 +1,91 @@
-"""
-1. Сконфигурируйте логгер программы из темы 4 так, чтобы он:
-
-* писал логи в файл stderr.txt;
-* не писал дату, но писал время в формате HH:MM:SS,
-  где HH — часы, MM — минуты, SS — секунды с ведущими нулями.
-  Например, 16:00:09;
-* выводил логи уровня INFO и выше.
-
-2. К нам пришли сотрудники отдела безопасности и сказали, что, согласно новым стандартам безопасности,
-хорошим паролем считается такой пароль, который не содержит в себе слов английского языка,
-так что нужно доработать программу из предыдущей задачи.
-
-Напишите функцию is_strong_password, которая принимает на вход пароль в виде строки,
-а возвращает булево значение, которое показывает, является ли пароль хорошим по новым стандартам безопасности.
-"""
-
 import getpass
 import hashlib
 import logging
+import re
+from common import configure_logging
+from bisect import bisect_left
 
 logger = logging.getLogger("password_checker")
 
+def load_words_from_file(filename: str) -> list:
+    """
+    Загружает слова из файла, приводит их к нижнему регистру и сортирует.
+    :param filename: Имя файла со словами.
+    :return: Отсортированный список слов в нижнем регистре.
+    """
+    try:
+        with open(filename, 'r') as file:
+            words = [line.strip().lower() for line in file]
+        words.sort()  # Сортируем слова для бинарного поиска
+        return words
+    except FileNotFoundError:
+        logger.error(f"Файл {filename} не найден.")
+        return []
+
+def binary_search(word: str, sorted_words: list) -> bool:
+    """
+    Выполняет бинарный поиск слова в отсортированном списке.
+    :param word: Слово для поиска.
+    :param sorted_words: Отсортированный список слов.
+    :return: True, если слово найдено, иначе False.
+    """
+    index = bisect_left(sorted_words, word)
+    return index < len(sorted_words) and sorted_words[index] == word
 
 def is_strong_password(password: str) -> bool:
+    """
+    Проверяет, является ли пароль сильным.
+    Пароль считается сильным, если он не содержит слов из файла words.
+    :param password: Пароль для проверки.
+    :return: True, если пароль сильный, иначе False.
+    """
+    words = load_words_from_file('words')
+    password_lower = password.lower()
+
+    # Используем регулярное выражение для поиска всех подстрок из букв
+    word_pattern = re.compile(r'\b\w+\b')
+    password_words = word_pattern.findall(password_lower)
+
+    for word in password_words:
+        if binary_search(word, words):
+            logger.warning(f'Пароль содержит запрещённое слово: {word}')
+            return False
+
     return True
 
-
 def input_and_check_password() -> bool:
-    logger.debug("Начало input_and_check_password")
+    logger.debug('Начало input_and_check_password')
     password: str = getpass.getpass()
 
     if not password:
-        logger.warning("Вы ввели пустой пароль.")
+        logger.warning('Вы ввели пустой пароль.')
         return False
-    elif is_strong_password(password):
-        logger.warning("Вы ввели слишком слабый пароль")
+    elif not is_strong_password(password):
+        logger.warning('Вы ввели слишком слабый пароль')
         return False
 
     try:
         hasher = hashlib.md5()
 
-        hasher.update(password.encode("latin-1"))
+        hasher.update(password.encode('latin-1'))
 
-        if hasher.hexdigest() == "098f6bcd4621d373cade4e832627b4f6":
+        if hasher.hexdigest() == '098f6bcd4621d373cade4e832627b4f6':
             return True
     except ValueError as ex:
-        logger.exception("Вы ввели некорректный символ ", exc_info=ex)
+        logger.exception('Вы ввели некорректный символ ', exc_info=ex)
 
     return False
 
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
-    logger.info("Вы пытаетесь аутентифицироваться в Skillbox")
+if __name__ == '__main__':
+    configure_logging(level=logging.INFO)
+    logger.info('Вы пытаетесь аутентифицироваться в Skillbox')
     count_number: int = 3
-    logger.info(f"У вас есть {count_number} попыток")
+    logger.info(f'У вас есть {count_number} попыток')
 
     while count_number > 0:
         if input_and_check_password():
             exit(0)
         count_number -= 1
 
-    logger.error("Пользователь трижды ввёл не правильный пароль!")
+    logger.error('Пользователь трижды ввёл неправильный пароль!')
     exit(1)

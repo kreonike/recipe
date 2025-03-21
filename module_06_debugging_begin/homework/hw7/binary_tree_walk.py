@@ -15,15 +15,11 @@ def restore_tree(path_to_log_file: str) -> BinaryTreeNode:
 
 Примечание: гарантируется, что все значения, хранящиеся в бинарном дереве уникальны
 """
-import itertools
+
 import logging
-import random
-from collections import deque
 from dataclasses import dataclass
-from typing import Optional
-
-logger = logging.getLogger("tree_walk")
-
+from typing import Optional, Dict
+from common import configure_logging, JsonAdapter
 
 @dataclass
 class BinaryTreeNode:
@@ -34,52 +30,50 @@ class BinaryTreeNode:
     def __repr__(self):
         return f"<BinaryTreeNode[{self.val}]>"
 
-
-def walk(root: BinaryTreeNode):
-    queue = deque([root])
-
-    while queue:
-        node = queue.popleft()
-
-        logger.info(f"Visiting {node!r}")
-
-        if node.left:
-            logger.debug(
-                f"{node!r} left is not empty. Adding {node.left!r} to the queue"
-            )
-            queue.append(node.left)
-
-        if node.right:
-            logger.debug(
-                f"{node!r} right is not empty. Adding {node.right!r} to the queue"
-            )
-            queue.append(node.right)
-
-
-counter = itertools.count(random.randint(1, 10 ** 6))
-
-
-def get_tree(max_depth: int, level: int = 1) -> Optional[BinaryTreeNode]:
-    if max_depth == 0:
-        return None
-
-    node_left = get_tree(max_depth - 1, level=level + 1)
-    node_right = get_tree(max_depth - 1, level=level + 1)
-    node = BinaryTreeNode(val=next(counter), left=node_left, right=node_right)
-
-    return node
-
-
 def restore_tree(path_to_log_file: str) -> BinaryTreeNode:
-    pass
+    configure_logging(level=logging.DEBUG)
+    logger = JsonAdapter(logging.getLogger("restore_tree"))
 
+    nodes: Dict[int, BinaryTreeNode] = {}
+    root = None
+
+    with open(path_to_log_file, 'r') as file:
+        lines = file.readlines()
+
+    for line in lines:
+        if "Visiting" in line:
+            node_value = int(line.split("Visiting <BinaryTreeNode[")[1].split("]>")[0])
+            if node_value not in nodes:
+                nodes[node_value] = BinaryTreeNode(val=node_value)
+            current_node = nodes[node_value]
+
+            if root is None:
+                root = current_node
+                logger.info(f"Root node found: {root}")
+
+        elif "left is not empty" in line:
+            left_value = int(line.split("Adding <BinaryTreeNode[")[1].split("]>")[0])
+            if left_value not in nodes:
+                nodes[left_value] = BinaryTreeNode(val=left_value)
+            current_node.left = nodes[left_value]
+            logger.debug(f"Added left child {left_value} to node {current_node.val}")
+
+        elif "right is not empty" in line:
+            right_value = int(line.split("Adding <BinaryTreeNode[")[1].split("]>")[0])
+            if right_value not in nodes:
+                nodes[right_value] = BinaryTreeNode(val=right_value)
+            current_node.right = nodes[right_value]
+            logger.debug(f"Added right child {right_value} to node {current_node.val}")
+
+    logger.info("Tree restoration completed")
+    return root
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(levelname)s:%(message)s",
-        filename="walk_log_4.txt",
-    )
+    restored_root = restore_tree("walk_log_4.txt")
+    def print_tree(node: Optional[BinaryTreeNode], level: int = 0):
+        if node is not None:
+            print_tree(node.right, level + 1)
+            print(' ' * 4 * level + '->', node.val)
+            print_tree(node.left, level + 1)
 
-    root = get_tree(7)
-    walk(root)
+    print_tree(restored_root)

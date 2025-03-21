@@ -6,12 +6,16 @@
 в начале и в конце которой пишется "Enter measure_me" и "Leave measure_me".
 Сконфигурируйте логгер, запустите программу, соберите логи и посчитайте среднее время выполнения функции measure_me.
 """
+
 import logging
 import random
+import json
 from typing import List
+from datetime import datetime
+from common import configure_logging, JsonAdapter
 
 logger = logging.getLogger(__name__)
-
+logger = JsonAdapter(logger)
 
 def get_data_line(sz: int) -> List[int]:
     try:
@@ -19,7 +23,6 @@ def get_data_line(sz: int) -> List[int]:
         return [random.randint(-(2 ** 31), 2 ** 31 - 1) for _ in range(sz)]
     finally:
         logger.debug("Leave get_data_line")
-
 
 def measure_me(nums: List[int]) -> List[List[int]]:
     logger.debug("Enter measure_me")
@@ -51,16 +54,38 @@ def measure_me(nums: List[int]) -> List[List[int]]:
                     left += 1
                 else:
                     logger.debug(f"Decrement right (left, right) = {left, right}")
-
                     right -= 1
 
     logger.debug("Leave measure_me")
-
     return results
 
+def calculate_average_duration(log_file: str) -> float:
+    """
+    Вычисляет среднее время выполнения функции measure_me на основе логов.
+    @param log_file: путь к файлу с логами
+    @return: среднее время выполнения в секундах
+    """
+    enter_times = []
+    leave_times = []
+
+    with open(log_file, 'r', encoding='utf-8') as file:
+        for line in file:
+            log = json.loads(line)
+            if log['message'] == "Enter measure_me":
+                enter_times.append(datetime.strptime(log['time'], '%Y-%m-%d %H:%M:%S'))
+            elif log['message'] == "Leave measure_me":
+                leave_times.append(datetime.strptime(log['time'], '%Y-%m-%d %H:%M:%S'))
+
+    durations = [(leave - enter).total_seconds() for enter, leave in zip(enter_times, leave_times)]
+
+    average_duration = sum(durations) / len(durations) if durations else 0
+    return average_duration
 
 if __name__ == "__main__":
-    logging.basicConfig(level="DEBUG")
+    configure_logging()
     for it in range(15):
         data_line = get_data_line(10 ** 3)
         measure_me(data_line)
+
+    average_duration = calculate_average_duration('measure_me.log')
+    print(f"Среднее время выполнения функции measure_me: {average_duration:.4f} секунд")
