@@ -32,7 +32,7 @@ def index():
 
 
 @app.errorhandler(404)
-def page_not_found():
+def page_not_found(error):
     links = []
     for rule in app.url_map.iter_rules():
         if 'static' not in rule.endpoint and '<' not in rule.rule:
