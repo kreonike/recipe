@@ -3,6 +3,7 @@ import logging
 
 class JsonAdapter(logging.LoggerAdapter):
     def process(self, msg, kwargs):
+        # TODO для начала стоит сериализовать в json c поддержкой нелатинских букв: json.dumps(msg, ensure_ascii=False)
         msg = msg.replace('"', '\\"')
         return msg, kwargs
 

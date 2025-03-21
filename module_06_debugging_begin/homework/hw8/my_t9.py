@@ -46,7 +46,7 @@ def my_t9(input_numbers: str) -> List[str]:
     generate_combinations(input_numbers, "", 0)
 
     valid_words = [word for word in combinations if word in english_words]
-
+    # TODO Подсказка: проще решить с помощью регэксп-выражений
     return valid_words
 
 if __name__ == '__main__':

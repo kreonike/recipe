@@ -31,6 +31,7 @@ from common import configure_logging
 
 class JsonAdapter(logging.LoggerAdapter):
     def process(self, msg, kwargs):
+        # TODO  см. комментарий в сommon
         new_message = msg
         return new_message, kwargs
 

@@ -48,7 +48,9 @@ def is_strong_password(password: str) -> bool:
         if binary_search(word, words):
             logger.warning(f'Пароль содержит запрещённое слово: {word}')
             return False
-    
+    # TODO можно уменьшить количество итераций, если регэкспами найти все "слова" в пароле (по факту, все комбинации
+    #  подстрок из букв) и проверить их вхождение в words
+
     return True
 
 def input_and_check_password() -> bool:
