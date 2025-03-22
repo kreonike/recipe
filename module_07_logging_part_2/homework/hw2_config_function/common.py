@@ -17,15 +17,7 @@ def configure_logging(level=logging.INFO):
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
 
-    debug_file_handler = logging.FileHandler('calc_debug.log')
-    debug_file_handler.setLevel(logging.DEBUG)
-    debug_file_handler.setFormatter(formatter)
-
-    error_file_handler = logging.FileHandler('calc_error.log')
-    error_file_handler.setLevel(logging.ERROR)
-    error_file_handler.setFormatter(formatter)
-
     logging.basicConfig(
         level=level,
-        handlers=[console_handler, debug_file_handler, error_file_handler]
+        handlers=[console_handler]
     )
