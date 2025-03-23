@@ -4,9 +4,17 @@ import sys
 
 class JsonAdapter(logging.LoggerAdapter):
     def process(self, msg, kwargs):
+        # TODO в прошлом модуле подсказывал, что надо для начала сериализовать msg с помощью
+        #  json.dumps(msg, ensure_ascii=False)
         msg = msg.replace('"', '\\"')
         return msg, kwargs
 
+# TODO По заданию надо разработать на базе класса Handler хендлер файлов для записи сообщний разных уровней в
+#  соответствующие файлы, а так как уровней сообщений достаточно много, поэтому, чтобы не дублировать код, имя файла
+#  лога удобно формировать динамически с учетом "уровня" записи:
+#  "<base_name>_<level>.log"
+#  где base_name передается через параметр при создании вашего хенлера, а уровень можно получить из объекта записи:
+#  level = record.levelname.lower()
 
 def configure_logging(level=logging.INFO):
     formatter = logging.Formatter(
