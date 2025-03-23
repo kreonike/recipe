@@ -7,8 +7,7 @@ class ASCIIFilter(Filter):
     """
 
     def filter(self, record):
-        return record.getMessage().isascii()
-        # TODO проще так: return record.msg.isascii()
+        return record.msg.isascii()
 
 
 LOGGING_CONFIG = {

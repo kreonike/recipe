@@ -1,39 +1,43 @@
 import logging
 import sys
+import json
+from logging import Handler
 
 
 class JsonAdapter(logging.LoggerAdapter):
     def process(self, msg, kwargs):
-        # TODO в прошлом модуле подсказывал, что надо для начала сериализовать msg с помощью
-        #  json.dumps(msg, ensure_ascii=False)
-        msg = msg.replace('"', '\\"')
+        msg = json.dumps(msg, ensure_ascii=False)
         return msg, kwargs
 
-# TODO По заданию надо разработать на базе класса Handler хендлер файлов для записи сообщний разных уровней в
-#  соответствующие файлы, а так как уровней сообщений достаточно много, поэтому, чтобы не дублировать код, имя файла
-#  лога удобно формировать динамически с учетом "уровня" записи:
-#  "<base_name>_<level>.log"
-#  где base_name передается через параметр при создании вашего хенлера, а уровень можно получить из объекта записи:
-#  level = record.levelname.lower()
+
+class LevelBasedFileHandler(Handler):
+    """
+    Пользовательский хендлер для записи сообщений разных уровней в соответствующие файлы.
+    Имя файла формируется динамически: <base_name>_<level>.log
+    """
+
+    def __init__(self, base_name):
+        super().__init__()
+        self.base_name = base_name
+
+    def emit(self, record):
+        level = record.levelname.lower()
+        filename = f"{self.base_name}_{level}.log"
+
+        with open(filename, "a") as f:
+            f.write(self.format(record) + "\n")
+
 
 def configure_logging(level=logging.INFO):
     formatter = logging.Formatter(
-        '%(levelname)s | %(name)s | %(asctime)s | %(lineno)d | %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        "%(levelname)s | %(name)s | %(asctime)s | %(lineno)d | %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
 
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
 
-    debug_file_handler = logging.FileHandler('calc_debug.log')
-    debug_file_handler.setLevel(logging.DEBUG)
-    debug_file_handler.setFormatter(formatter)
+    level_file_handler = LevelBasedFileHandler(base_name="calc")
+    level_file_handler.setFormatter(formatter)
 
-    error_file_handler = logging.FileHandler('calc_error.log')
-    error_file_handler.setLevel(logging.ERROR)
-    error_file_handler.setFormatter(formatter)
-
-    logging.basicConfig(
-        level=level,
-        handlers=[console_handler, debug_file_handler, error_file_handler]
-    )
+    logging.basicConfig(level=level, handlers=[console_handler, level_file_handler])
