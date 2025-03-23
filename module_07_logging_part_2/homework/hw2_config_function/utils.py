@@ -8,10 +8,10 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 OPERATORS = {
-    "+": add,
-    "-": sub,
-    "*": mul,
-    "/": truediv,
+    '+': add,
+    '-': sub,
+    '*': mul,
+    '/': truediv,
 }
 
 Numeric = Union[int, float]
