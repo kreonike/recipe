@@ -1,6 +1,6 @@
 import logging
-import threading
 import random
+import threading
 import time
 from typing import List
 
@@ -21,19 +21,15 @@ class Philosopher(threading.Thread):
             logger.info(f'Philosopher {self.name} start thinking.')
             time.sleep(random.randint(1, 10))
             logger.info(f'Philosopher {self.name} is hungry.')
-            try:
-                self.left_fork.acquire()
+
+            with self.left_fork:
                 logger.info(f'Philosopher {self.name} acquired left fork')
-                if self.right_fork.locked():
-                    continue
-                try:
-                    self.right_fork.acquire()
-                    logger.info(f'Philosopher {self.name} acquired right fork')
-                    self.dining()
-                finally:
-                    self.right_fork.release()
-            finally:
-                self.left_fork.release()
+                if not self.right_fork.locked():  # Проверяем, доступен ли правый fork
+                    with self.right_fork:
+                        logger.info(f'Philosopher {self.name} acquired right fork')
+                        self.dining()
+                else:
+                    continue  # Если правый fork занят, продолжаем цикл
 
     def dining(self) -> None:
         logger.info(f'Philosopher {self.name} starts eating.')
@@ -42,10 +38,9 @@ class Philosopher(threading.Thread):
 
 
 def main() -> None:
-    forks: List[threading.Lock] = [threading.Lock() for n in range(5)]
+    forks: List[threading.Lock] = [threading.Lock() for _ in range(5)]
     philosophers: List[Philosopher] = [
-        Philosopher(forks[i % 5], forks[(i + 1) % 5])
-        for i in range(5)
+        Philosopher(forks[i % 5], forks[(i + 1) % 5]) for i in range(5)
     ]
     Philosopher.running = True
     for p in philosophers:
@@ -55,5 +50,5 @@ def main() -> None:
     logger.info("Now we're finishing.")
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
