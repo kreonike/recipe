@@ -71,7 +71,8 @@ def main():
     producer.join()
 
     consumer.start()
-    task_queue.put((float('-inf'), None))
+    task_queue.put((float('-inf'), None))  # TODO цель этого была расположить запись в конце всех задач, значить надо
+                                           #  указать +inf, ну или значение заведом больше любого возможного приоритета
     consumer.join()
 
     task_queue.join()
