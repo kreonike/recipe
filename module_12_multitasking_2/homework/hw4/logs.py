@@ -1,10 +1,14 @@
 import threading
 import time
+from multiprocessing import Queue
 
 import requests
 
+# Создаем очередь для хранения логов
+log_queue = Queue()
 
-def worker():
+
+def worker(worker_id):
     start_time = time.time()
     while time.time() - start_time < 20:  # Работаем 20 секунд
         current_timestamp = time.time()
@@ -19,13 +23,11 @@ def worker():
 
         log_entry = f'{current_timestamp} {date_str}\n'
 
-        with threading.Lock(), open('thread_logs.txt', 'a') as k:
-            k.write(log_entry)
+        # Добавляем запись в очередь вместо записи в файл
+        log_queue.put(log_entry)
 
         time.sleep(1)
-# TODO Сейчас записи пишут в лог (в файл) каждый раз при поступлении новой записи, а это противоречит заданию.
-#  Воркер пусть складывает всё в очередь (это специальный объект класса Queue из библиотеки multiproceccing). После
-#  завершения работы всех воркеров надо ОДИН раз записать всё, что накоплено в очереди в файл лога.
+
 
 def run_server():
     import subprocess
@@ -34,6 +36,7 @@ def run_server():
 
 
 if __name__ == '__main__':
+    # Очищаем файл логов
     open('thread_logs.txt', 'w').close()
 
     run_server()
@@ -46,9 +49,16 @@ if __name__ == '__main__':
         t.start()
         time.sleep(1)
 
+    # Ждем завершения всех потоков
     for t in threads:
         t.join()
 
+    # После завершения всех воркеров записываем все записи из очереди в файл
+    with open('thread_logs.txt', 'a') as f:
+        while not log_queue.empty():
+            f.write(log_queue.get())
+
+    # Сортируем записи
     with open('thread_logs.txt', 'r') as f:
         lines = f.readlines()
 
