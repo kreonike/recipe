@@ -2,6 +2,18 @@ import datetime
 import sqlite3
 
 
+def create_table(cursor: sqlite3.Cursor) -> None:
+    cursor.execute(
+        '''
+        CREATE TABLE IF NOT EXISTS table_birds (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            time TEXT NOT NULL,
+            bird_name TEXT NOT NULL
+        )
+        '''
+    )
+
+
 def log_bird(
     cursor: sqlite3.Cursor,
     bird_name: str,
@@ -11,7 +23,7 @@ def log_bird(
         '''
         INSERT INTO table_birds (time, bird_name)
         VALUES (?, ?)
-    ''',
+        ''',
         (date_time, bird_name),
     )
 
@@ -24,7 +36,7 @@ def check_if_such_bird_already_seen(cursor: sqlite3.Cursor, bird_name: str) -> b
             FROM table_birds 
             WHERE bird_name = ?
         )
-    ''',
+        ''',
         (bird_name,),
     )
     return cursor.fetchone()[0] == 1
@@ -39,6 +51,7 @@ if __name__ == '__main__':
 
     with sqlite3.connect('../homework.db') as connection:
         cursor: sqlite3.Cursor = connection.cursor()
+        create_table(cursor)  # Создаем таблицу при запуске
         log_bird(cursor, name, right_now)
 
         if check_if_such_bird_already_seen(cursor, name):
