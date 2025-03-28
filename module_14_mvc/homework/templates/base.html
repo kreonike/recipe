@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>
-        Books
-    </title>
-    <link rel="stylesheet" type="text/css" href="../static/style.css">
-    <link href='http://fonts.googleapis.com/css?family=Bitter' rel='stylesheet' type='text/css'>
-
+    <title>Books Library</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<h1>The greatest book library you have ever seen!</h1>
-<hr>
+<header>
+    <h1>The greatest book library you have ever seen!</h1>
+    <hr>
+</header>
 
 {% block content %}{% endblock %}
 
+<footer>
+    <hr>
+    <p>© 2023 Books Library</p>
+</footer>
 </body>
 </html>
