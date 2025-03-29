@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, abort
+from flask import Flask, render_template, request, redirect, url_for
 
 from forms import BookForm
 from models import (
@@ -7,7 +7,6 @@ from models import (
     get_books_by_author,
     add_book,
     increment_views,
-    get_book_by_id,
     DATA,
 )
 
@@ -18,6 +17,9 @@ app.config['SECRET_KEY'] = 'your-secret-key'
 @app.route('/books')
 def all_books():
     books = get_all_books()
+    # Инкрементируем просмотры для каждой книги
+    for book in books:
+        increment_views(book.id)
     total_books = len(books)
     return render_template(
         'index.html',
@@ -27,16 +29,18 @@ def all_books():
     )
 
 
-@app.route('/books/<int:book_id>')
-def book_details(book_id):
-    book = get_book_by_id(book_id)
-    if not book:
-        abort(404)
-
-    increment_views(book_id)
-    book = get_book_by_id(book_id)
+@app.route('/books/search', methods=['GET'])
+def book_search():
+    author_name = request.args.get('author', '').strip()
+    books = get_books_by_author(author_name)
+    # Инкрементируем просмотры для каждой найденной книги
+    for book in books:
+        increment_views(book.id)
     return render_template(
-        'book_details.html', book=book, page_title=f'Book: {book.title}'
+        'search_results.html',
+        books=books,
+        author_name=author_name,
+        page_title=f'Search results for: {author_name}',
     )
 
 
