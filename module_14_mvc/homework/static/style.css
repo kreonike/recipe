@@ -140,3 +140,127 @@ table.customTable thead {
     margin-top: 10px;
     text-align: right;
 }
+
+.errors {
+    color: red;
+    list-style-type: none;
+    padding: 0;
+}
+
+.flashes {
+    color: red;
+    list-style-type: none;
+    padding: 0;
+}
+
+.content-wrapper {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.library-title {
+    color: #2A88AD;
+    text-align: center;
+    margin-bottom: 30px;
+    font: normal 28px 'Bitter', serif;
+}
+
+.no-books {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 30px 0;
+    padding: 20px;
+    font-size: 18px;
+}
+
+.action-buttons {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.form-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #2A88AD;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font: normal 16px 'Bitter', serif;
+    transition: background 0.3s;
+}
+
+.form-button:hover {
+    background: #2A6881;
+}
+
+.book-details {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 20px 0;
+}
+
+.book-details p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.view-link {
+    color: #2A88AD;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.view-link:hover {
+    text-decoration: underline;
+}
+
+.views-count {
+    font-weight: bold;
+    color: #2A88AD;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.views-updated {
+    animation: pulse 0.5s;
+}
+
+.search-form {
+    margin: 20px auto;
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    max-width: 600px;
+}
+
+.search-form input[type="text"] {
+    padding: 10px 15px;
+    width: 60%;
+    border: 2px solid #7ea8f8;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.search-form button {
+    padding: 10px 20px;
+    background: #2A88AD;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+.search-form button:hover {
+    background: #2A6881;
+}

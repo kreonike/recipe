@@ -1,44 +1,49 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>
-        Books
-    </title>
-    <link rel="stylesheet" type="text/css" href="../static/style.css">
-    <link href='http://fonts.googleapis.com/css?family=Bitter' rel='stylesheet' type='text/css'>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h1>Books:</h1>
+{% block content %}
+<div class="content-wrapper">
+    <h1 class="library-title">{{ page_title }}</h1>
 
-{% if books %}
-<table class="customTable">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Author</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for book in books %}
-    <tr>
-        <td>
-            {{ book.id }}
-        </td>
-        <td>
-            {{ book.title }}
-        </td>
-        <td>
-            {{ book.author }}
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<h2> Sorry, no books in DB.</h2>
-{% endif %}
+    <div class="search-form">
+        <form action="{{ url_for('book_search') }}" method="GET">
+            <input type="text" name="author" placeholder="Enter author name"
+                   value="{{ request.args.get('author', '') }}">
+            <button type="submit" class="form-button">Search</button>
+        </form>
+    </div>
 
-</body>
-</html>
+    {% if books %}
+    <table class="customTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Views</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for book in books %}
+        <tr>
+            <td>{{ book.id }}</td>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.views }}</td>
+            <td>
+                <a href="{{ url_for('book_details', book_id=book.id) }}" class="view-link">View Details</a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="no-books">No books found{% if request.args.get('author') %} for author "{{ request.args.get('author')
+        }}"{% endif %}.</p>
+    {% endif %}
+
+    <div class="action-buttons">
+        <a href="{{ url_for('get_books_form') }}" class="form-button">Add New Book</a>
+    </div>
+</div>
+{% endblock %}

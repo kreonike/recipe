@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-wrapper">
+    <h1 class="library-title">{{ book.title }}</h1>
+
+    <div class="book-details">
+        <p><strong>Author:</strong> {{ book.author }}</p>
+        <p><strong>Views:</strong> {{ book.views }}</p>
+        <p><strong>ID:</strong> {{ book.id }}</p>
+    </div>
+
+    <div class="action-buttons">
+        <a href="{{ url_for('all_books') }}" class="form-button">Back to All Books</a>
+    </div>
+</div>
+{% endblock %}
