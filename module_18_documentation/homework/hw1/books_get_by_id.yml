@@ -1,0 +1,34 @@
+tags: [ Books ]
+summary: Получить книгу по ID
+description: Возвращает информацию о конкретной книге
+parameters:
+  - name: book_id
+    in: path
+    description: ID книги
+    required: true
+    type: integer
+    format: int64
+responses:
+  200:
+    description: Успешный запрос
+    schema:
+      $ref: '#/definitions/Book'
+  404:
+    description: Книга не найдена
+definitions:
+  Book:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+        description: Уникальный идентификатор книги
+      title:
+        type: string
+        description: Название книги
+      author_id:
+        type: integer
+        format: int64
+        description: ID автора книги
+    required: [ title, author_id ]

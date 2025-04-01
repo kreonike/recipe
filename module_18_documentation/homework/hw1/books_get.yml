@@ -1,0 +1,25 @@
+tags: [ Books ]
+summary: Получить список всех книг
+description: Возвращает список всех книг в системе
+responses:
+  200:
+    description: Успешный запрос
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/Book'
+definitions:
+  Book:
+    type: object
+    properties:
+      id:
+        type: integer
+        readOnly: true
+        description: Уникальный идентификатор книги
+      title:
+        type: string
+        description: Название книги
+      author_id:
+        type: integer
+        description: ID автора книги
+    required: [ title, author_id ]
