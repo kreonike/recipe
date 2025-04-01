@@ -2,7 +2,7 @@ from flask import Flask
 from flask_jsonrpc import JSONRPC
 
 app = Flask(__name__)
-jsonrpc = JSONRPC(app, '/jsonrpc')
+jsonrpc = JSONRPC(app, '/jsonrpc')  # TODO для удобства добавьте параметр enable_web_browsable_api=True
 
 
 @jsonrpc.method('calculate')
