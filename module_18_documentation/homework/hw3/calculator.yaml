@@ -1,0 +1,143 @@
+openapi: 3.0.0
+info:
+  title: JSON-RPC Calculator API
+  description: API для выполнения базовых арифметических операций через JSON-RPC 2.0
+  version: 1.0.0
+
+servers:
+  - url: http://example.com/jsonrpc
+    description: Основной сервер JSON-RPC
+
+paths:
+  /jsonrpc:
+    post:
+      summary: Выполнение арифметической операции
+      description: Принимает JSON-RPC запрос для выполнения операций сложения, вычитания, умножения или деления
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request'
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Ошибка в запросе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Request:
+      type: object
+      required:
+        - jsonrpc
+        - method
+        - params
+        - id
+      properties:
+        jsonrpc:
+          type: string
+          enum: ["2.0"]
+          example: "2.0"
+        method:
+          type: string
+          enum: ["calculate"]
+          example: "calculate"
+        params:
+          type: object
+          required:
+            - operation
+            - a
+            - b
+          properties:
+            operation:
+              type: string
+              enum: ["add", "subtract", "multiply", "divide"]
+              description: Тип арифметической операции
+              example: "add"
+            a:
+              type: number
+              description: Первый операнд
+              example: 5
+            b:
+              type: number
+              description: Второй операнд
+              example: 3
+        id:
+          type: 
+            - integer
+            - string
+          description: Уникальный идентификатор запроса
+          example: 1
+
+    SuccessResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          enum: ["2.0"]
+          example: "2.0"
+        result:
+          type: number
+          description: Результат вычисления
+          example: 8
+        id:
+          type:
+            - integer
+            - string
+          example: 1
+
+    ErrorResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          enum: ["2.0"]
+          example: "2.0"
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              enum: [-32602, -32000]
+              description: |
+                -32602 - Неверные параметры
+                -32000 - Деление на ноль
+              example: -32000
+            message:
+              type: string
+              example: "Деление на ноль"
+        id:
+          type:
+            - integer
+            - string
+          example: 3
+
+examples:
+  AdditionExample:
+    value:
+      jsonrpc: "2.0"
+      method: "calculate"
+      params:
+        operation: "add"
+        a: 5
+        b: 3
+      id: 1
+
+  DivisionErrorExample:
+    value:
+      jsonrpc: "2.0"
+      method: "calculate"
+      params:
+        operation: "divide"
+        a: 5
+        b: 0
+      id: 2

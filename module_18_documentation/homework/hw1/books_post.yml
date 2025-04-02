@@ -1,0 +1,32 @@
+tags: [ Books ]
+summary: Создать новую книгу
+description: Добавляет новую книгу в систему
+parameters:
+  - in: body
+    name: body
+    description: Данные книги
+    required: true
+    schema:
+      $ref: '#/definitions/Book'
+responses:
+  201:
+    description: Книга успешно создана
+    schema:
+      $ref: '#/definitions/Book'
+  400:
+    description: Ошибка валидации
+definitions:
+  Book:
+    type: object
+    properties:
+      id:
+        type: integer
+        readOnly: true
+        description: Уникальный идентификатор книги
+      title:
+        type: string
+        description: Название книги
+      author_id:
+        type: integer
+        description: ID автора книги
+    required: [ title, author_id ]
