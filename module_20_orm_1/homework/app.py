@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from sqlalchemy import create_engine, func
+from sqlalchemy import create_engine, func, case, and_, or_
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime, timedelta
 from models import Base, Book, Student, ReceivingBook  # Предполагаем, что модели определены в отдельном файле
@@ -32,25 +32,33 @@ def get_all_books():
 
 @app.route('/debtors', methods=['GET'])
 def get_debtors():
-    """Получить список должников (держат книги более 14 дней)"""
+    """Получить список должников (держали книги более 14 дней, включая уже возвращенные)"""
     session = Session()
     try:
-        fourteen_days_ago = datetime.now() - timedelta(days=14)
-
         debtors = session.query(Student, Book, ReceivingBook) \
             .join(ReceivingBook, ReceivingBook.student_id == Student.id) \
             .join(Book, ReceivingBook.book_id == Book.id) \
             .filter(
-            ReceivingBook.date_of_return == None,
-            ReceivingBook.date_of_issue < fourteen_days_ago
-        ).all()
+                or_(
+                    and_(
+                        ReceivingBook.date_of_return == None,
+                        ReceivingBook.date_of_issue < datetime.now() - timedelta(days=14)
+                    ),
+                    and_(
+                        ReceivingBook.date_of_return != None,
+                        ReceivingBook.date_of_return - ReceivingBook.date_of_issue > timedelta(days=14)
+                    )
+                )
+            ).all()
 
         result = [{
             'student_id': student.id,
             'student_name': f"{student.name} {student.surname}",
             'book_id': book.id,
             'book_name': book.name,
-            'days_with_book': (datetime.now() - receiving.date_of_issue).days
+            'days_with_book': (datetime.now() - receiving.date_of_issue).days if receiving.date_of_return is None
+                              else (receiving.date_of_return - receiving.date_of_issue).days,
+            'is_returned': receiving.date_of_return is not None
         } for student, book, receiving in debtors]
 
         return jsonify(result), 200
