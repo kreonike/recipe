@@ -7,11 +7,6 @@ from config import SMTP_HOST, SMTP_PORT, SMTP_PASSWORD, SMTP_USER
 
 
 def send_email(order_id: str, receiver: str, filename: str):
-    """
-    Отправляет пользователю `receiver` письмо по заказу `order_id` с приложенным файлом `filename`
-
-    Вы можете изменить логику работы данной функции
-    """
     with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
         server.starttls()
         server.login(SMTP_USER, SMTP_PASSWORD)
@@ -26,10 +21,7 @@ def send_email(order_id: str, receiver: str, filename: str):
             part.set_payload(attachment.read())
 
         encoders.encode_base64(part)
-        part.add_header(
-            'Content-Disposition',
-            f'attachment; filename={filename}'
-        )
+        part.add_header('Content-Disposition', f'attachment; filename={filename}')
         email.attach(part)
         text = email.as_string()
 

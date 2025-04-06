@@ -1,15 +1,21 @@
-"""
-В этом файле будут секретные данные
+from datetime import timedelta
 
-Для создания почтового сервиса воспользуйтесь следующими инструкциями
+from celery import Celery
 
-- Yandex: https://yandex.ru/support/mail/mail-clients/others.html
-- Google: https://support.google.com/mail/answer/7126229?visit_id=638290915972666565-928115075
-"""
+celery_app = Celery(
+    'tasks', broker='redis://localhost:6379/0', backend='redis://localhost:6379/0'
+)
 
-# https://yandex.ru/support/mail/mail-clients/others.html
+celery_app.conf.beat_schedule = {
+    'send-weekly-newsletter': {
+        'task': 'celery_worker.send_newsletter_to_subscribers',
+        'schedule': timedelta(weeks=1),
+    },
+}
 
-SMTP_USER = "ПОЧТА ОТПРАВИТЕЛЯ"
 SMTP_HOST = "smtp.yandex.com"
-SMTP_PASSWORD = "ПАРОЛЬ ОТ ПОЧТЫ ОТПРАВИТЕЛЯ / СПЕЦИАЛЬНЫЙ ТОКЕН ПРИЛОЖЕНИЯ"
 SMTP_PORT = 587
+SMTP_USER = "your_email@yandex.com"
+SMTP_PASSWORD = "your_password_or_app_token"
+
+subscribed_emails = set()
