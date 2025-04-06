@@ -27,7 +27,7 @@ def process_image(image_path, order_id, email):
         os.remove(blurred_filename)
         return True
     except Exception as e:
-        print(f"Error processing image: {e}")
+        print(f"Error: {e}")
         return False
 
 
