@@ -1,19 +1,18 @@
+import os
 import smtplib
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 
-from config import SMTP_HOST, SMTP_PORT, SMTP_PASSWORD, SMTP_USER
-
 
 def send_email(order_id: str, receiver: str, filename: str):
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+    with smtplib.SMTP(os.getenv('SMTP_HOST'), int(os.getenv('SMTP_PORT'))) as server:
         server.starttls()
-        server.login(SMTP_USER, SMTP_PASSWORD)
+        server.login(os.getenv('SMTP_USER'), os.getenv('SMTP_PASSWORD'))
 
         email = MIMEMultipart()
         email['Subject'] = f'Изображения. Заказ №{order_id}'
-        email['From'] = SMTP_USER
+        email['From'] = os.getenv('SMTP_USER')
         email['To'] = receiver
 
         with open(filename, 'rb') as attachment:
@@ -25,4 +24,4 @@ def send_email(order_id: str, receiver: str, filename: str):
         email.attach(part)
         text = email.as_string()
 
-        server.sendmail(SMTP_USER, receiver, text)
+        server.sendmail(os.getenv('SMTP_USER'), receiver, text)

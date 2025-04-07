@@ -1,0 +1,18 @@
+<--""
+   Level DEBUG
+   Handler Stream <_io.TextIOWrapper name='<stdout>' mode='w' encoding='utf-8'>
+     Level INFO
+     Formatter fmt='%(levelname)s | %(name)s | %(asctime)s | %(lineno)d | %(message)s' datefmt='%Y-%m-%d %H:%M:%S'
+   Handler File 'C:\\Users\\kreon\\Dropbox\\piproject\\python_advanced\\module_07_logging_part_2\\homework\\hw6_logging_tree\\calc_debug.log'
+     Level DEBUG
+     Formatter fmt='%(levelname)s | %(name)s | %(asctime)s | %(lineno)d | %(message)s' datefmt='%Y-%m-%d %H:%M:%S'
+   Handler File 'C:\\Users\\kreon\\Dropbox\\piproject\\python_advanced\\module_07_logging_part_2\\homework\\hw6_logging_tree\\calc_error.log'
+     Level ERROR
+     Formatter fmt='%(levelname)s | %(name)s | %(asctime)s | %(lineno)d | %(message)s' datefmt='%Y-%m-%d %H:%M:%S'
+   |
+   o   "utils"
+       Level INFO
+       Propagate OFF
+       Handler TimedRotatingFile 'C:\\Users\\kreon\\Dropbox\\piproject\\python_advanced\\module_07_logging_part_2\\homework\\hw6_logging_tree\\utils.log' when='H' interval=3600 backupCount=10
+         Level INFO
+         Formatter fmt='%(levelname)s | %(name)s | %(asctime)s | %(lineno)d | %(message)s' datefmt='%Y-%m-%d %H:%M:%S'

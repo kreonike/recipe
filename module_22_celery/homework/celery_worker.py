@@ -1,13 +1,10 @@
+import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from config import (
     celery_app,
-    SMTP_HOST,
-    SMTP_PORT,
-    SMTP_USER,
-    SMTP_PASSWORD,
     subscribed_emails,
 )
 from mail import send_email
@@ -34,19 +31,21 @@ def process_image(image_path, order_id, email):
 @celery_app.task
 def send_newsletter(email):
     try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+        with smtplib.SMTP(
+            os.getenv('SMTP_HOST'), int(os.getenv('SMTP_PORT'))
+        ) as server:
             server.starttls()
-            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.login(os.getenv('SMTP_USER'), os.getenv('SMTP_PASSWORD'))
 
             email_msg = MIMEMultipart()
             email_msg['Subject'] = 'Weekly Newsletter from Image Processing Service'
-            email_msg['From'] = SMTP_USER
+            email_msg['From'] = os.getenv('SMTP_USER')
             email_msg['To'] = email
 
             text = "Thank you for using our image processing service! Here's your weekly update."
             email_msg.attach(MIMEText(text, 'plain'))
 
-            server.sendmail(SMTP_USER, email, email_msg.as_string())
+            server.sendmail(os.getenv('SMTP_USER'), email, email_msg.as_string())
         return True
     except Exception as e:
         print(f"Error sending newsletter: {e}")

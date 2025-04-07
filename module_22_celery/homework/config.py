@@ -1,6 +1,10 @@
 from datetime import timedelta
 
 from celery import Celery
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 celery_app = Celery(
     'tasks', broker='redis://localhost:6379/0', backend='redis://localhost:6379/0'
@@ -12,10 +16,5 @@ celery_app.conf.beat_schedule = {
         'schedule': timedelta(weeks=1),
     },
 }
-
-SMTP_HOST = "smtp.yandex.com"
-SMTP_PORT = 587
-SMTP_USER = "your_email@yandex.com"
-SMTP_PASSWORD = "your_password_or_app_token"
 
 subscribed_emails = set()
