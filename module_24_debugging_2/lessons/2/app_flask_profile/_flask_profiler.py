@@ -62,7 +62,7 @@ class NewEncoder(flask.json.JSONEncoder):
 app.json_encoder = NewEncoder
 
 
-# в случае, если роут описан после flask_profiler.init_app(app.py), необходимо
+# в случае, если роут описан после flask_profiler.init_app(generation.py), необходимо
 # применить декоратор, иначе он не будет обрабатываться профайлером
 @app.route('/five', methods=['GET'])
 @flask_profiler.profile()
