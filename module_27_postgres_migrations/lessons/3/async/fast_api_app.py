@@ -110,4 +110,4 @@ async def get_products_handler():
 
 
 if __name__ == '__main__':
-    uvicorn.run("fast_api_app:app.py", port=1111, host='127.0.0.1')
+    uvicorn.run("fast_api_app:generation.py", port=1111, host='127.0.0.1')

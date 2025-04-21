@@ -1,0 +1,51 @@
+services:
+  web:
+    build: .
+    ports:
+      - '8000:8000'
+    networks:
+      - app_network
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/skillbox_db
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: >
+      sh -c 'python generate_data.py &&
+             gunicorn --bind 0.0.0.0:8000 --workers 4 --timeout 120 main:app'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  db:
+    image: postgres:15
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=skillbox_db
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    networks:
+      - app_network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U user -d skillbox_db']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
