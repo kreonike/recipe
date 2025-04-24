@@ -64,8 +64,7 @@ async def read_recipe(recipe_id: int, db: Session = Depends(get_db)) -> RecipeDe
     return db_recipe
 
 
-# Тест для проверки линтеров wefrwefwefwefw
-@app.post('/recipes', response_model=RecipeDetail)
+@app.post('/recipess', response_model=RecipeDetail)
 async def create_recipe(
     recipe: RecipeCreate, db: Session = Depends(get_db)
 ) -> RecipeDetail:
