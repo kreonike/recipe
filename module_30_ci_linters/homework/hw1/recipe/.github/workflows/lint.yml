@@ -26,7 +26,7 @@ jobs:
           pip install flake8 pylint
 
       - name: Запуск Flake8
-        run: flake8 . --max-line-length=88 --extend-ignore=E203
+        run: flake8 . --max-line-length=88 --extend-ignore=E203 --exclude=venv,env
 
       - name: Запуск Pylint
-        run: pylint *.py --max-line-length=88
+        run: pylint **/*.py --max-line-length=88
