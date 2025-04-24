@@ -12,6 +12,7 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
+#test
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Управление жизненным циклом приложения FastAPI."""
@@ -64,7 +65,7 @@ async def read_recipe(recipe_id: int, db: Session = Depends(get_db)) -> RecipeDe
     return db_recipe
 
 
-@app.post('/recipess', response_model=RecipeDetail)
+@app.post('/recipes', response_model=RecipeDetail)
 async def create_recipe(
     recipe: RecipeCreate, db: Session = Depends(get_db)
 ) -> RecipeDetail:
